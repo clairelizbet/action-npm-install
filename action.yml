@@ -1,0 +1,30 @@
+name: "Install and cache dependencies"
+description: "Installs the NPM dependencies for a JS project and caches its dependencies"
+
+inputs:
+  node-version:
+    description: "Node version"
+    type: "string"
+    required: false
+    default: "18.x"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}
+        registry-url: "https://registry.npmjs.org"
+
+    - name: Connect dependency cache
+      id: npm-cache
+      uses: actions/cache@v3
+      with:
+        path: node_modules
+        key: ${{ hashFiles('package-lock.json', 'package.json') }}
+
+    - name: Install dependencies
+      if: steps.npm-cache.outputs.cache-hit != 'true'
+      run: npm ci
+      shell: bash
