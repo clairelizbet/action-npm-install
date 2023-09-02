@@ -16,15 +16,8 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
         registry-url: "https://registry.npmjs.org"
-
-    - name: Connect dependency cache
-      id: npm-cache
-      uses: actions/cache@v3
-      with:
-        path: node_modules
-        key: ${{ hashFiles('package-lock.json', 'package.json') }}
+        cache: "npm"
 
     - name: Install dependencies
-      if: steps.npm-cache.outputs.cache-hit != 'true'
       run: npm ci
       shell: bash
